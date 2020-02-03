@@ -29,7 +29,7 @@ import { Location } from './location'
 import { useQuery } from '@apollo/react-hooks'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import gql from 'graphql-tag'
-import { getIn } from 'immutable'
+import { getIn, remove } from 'immutable'
 
 import {
   APPLY_TO_KEY,
@@ -332,23 +332,10 @@ export const FilterCard = props => {
   )
 }
 
-export const BasicSearch = props => {
-  const [filterTree, setFilterTree] = React.useState(getFilterTree(props))
-
-  const [submitted, setSubmitted] = React.useState(false)
-  const errors = validate(filterTree)
-
-  const text = filterTree.get('text')
-
+export const BasicSearchQueryBuilder = props => {
+  const { filterTree, setFilterTree, text, submitted, errors = {} } = props
   return (
-    <div
-      style={{
-        overflow: 'auto',
-        padding: 2,
-        maxWidth: 600,
-        maxHeight: '100%',
-      }}
-    >
+    <React.Fragment>
       <Paper
         style={{
           display: 'flex',
@@ -374,8 +361,7 @@ export const BasicSearch = props => {
         />
       </Paper>
 
-      {filterTree
-        .remove('text')
+      {remove(filterTree, 'text')
         .map((state, filter) => {
           const Component = filters[filter]
           const label = filterLabels[filter]
@@ -385,7 +371,7 @@ export const BasicSearch = props => {
               key={filter}
               label={label}
               onRemove={() => {
-                setFilterTree(filterTree.remove(filter))
+                setFilterTree(remove(filterTree, filter))
               }}
             >
               <Component
@@ -404,6 +390,33 @@ export const BasicSearch = props => {
         .valueSeq()}
 
       <Divider />
+    </React.Fragment>
+  )
+}
+
+export const BasicSearch = props => {
+  const [filterTree, setFilterTree] = React.useState(getFilterTree(props))
+
+  const [submitted, setSubmitted] = React.useState(false)
+  const errors = validate(filterTree)
+
+  const text = filterTree.get('text')
+
+  return (
+    <div
+      style={{
+        overflow: 'auto',
+        padding: 2,
+        maxWidth: 600,
+        maxHeight: '100%',
+      }}
+    >
+      <BasicSearchQueryBuilder
+        filterTree={filterTree}
+        setFilterTree={setFilterTree}
+        text={text}
+        submitted={submitted}
+      />
 
       <div
         style={{

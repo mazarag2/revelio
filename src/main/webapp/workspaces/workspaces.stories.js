@@ -8,6 +8,7 @@ import useState from '../@storybook/use-state'
 import QuerySelector from './query-selector'
 import queries from './sample-queries.json'
 import { BasicSearch } from '../basic-search'
+import { SearchFormEditor } from '../search-forms/editor'
 
 const stories = storiesOf('Workspaces', module)
 
@@ -49,5 +50,19 @@ stories.add('Query Selector', () => {
       QueryEditor={QueryEditor}
       onSelect={setQuery}
     />
+  )
+})
+
+stories.add('Query Editor', () => {
+  return (
+    <SelectionProvider>
+      <div style={{ height: '100vh' }}>
+        <SearchFormEditor
+          onSearch={action('onSearch')}
+          onCancel={action('onCancel')}
+          onSave={action('onSave')}
+        />
+      </div>
+    </SelectionProvider>
   )
 })
