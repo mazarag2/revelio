@@ -101,6 +101,12 @@ const loadDynamicRoute = route => {
         import(/* webpackChunkName: "about" */ './components/about'),
       loading: LoadingComponent,
     }),
+    'target' : loadable({
+      loader : () => {
+        import(/* webpackChunkName: "about" */ './components/target')},
+        loading : LoadingComponent
+
+    }),
   }
 
   return routes[route]
@@ -157,6 +163,7 @@ const routes = [
     loadDynamicRoute('result-forms')
   ),
   createRoute('/about', 'About', InfoSharpIcon, loadDynamicRoute('about')),
+  createRoute('/target','Target',SearchIcon,loadDynamicRoute('target'))
 ]
 
 const otherRoutes = [
