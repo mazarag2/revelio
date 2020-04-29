@@ -102,8 +102,8 @@ const loadDynamicRoute = route => {
       loading: LoadingComponent,
     }),
     'target' : loadable({
-      loader : () => {
-        import(/* webpackChunkName: "about" */ './components/target')},
+      loader : async () => {
+        return (await import(/* webpackChunkName: "target" */ './components/target'))},
         loading : LoadingComponent
 
     }),
