@@ -48,7 +48,10 @@ export default props => {
 
   const [submitted, setSubmitted] = useState(false)
 
+  const [textFieldFocus, setTexFieldFocus] = useState(false)
+
   return (
+    
     <div
       style={{
         display: 'flex',
@@ -74,7 +77,8 @@ export default props => {
         onChange={e => setTitle(e.target.value)}
       />
 
-      <FormLabel> Classification </FormLabel>
+      <FormLabel stule={{padding: 20}}> Classification </FormLabel>
+      
       <TextField
         fullWidth
         rows={2}
@@ -87,10 +91,18 @@ export default props => {
       />
       <Divider variant="middle" />
       <div  style={{display : 'flex'}}>
-        <TextField label="Search Attribute" defaultValue="Enter BE Number, WKT, Target Text..."  display="inline"> 
+        <TextField label="Search Attribute"
+         defaultValue="Enter BE Number, WKT, Target Text..."  
+         onFocus={() => {setTexFieldFocus(true)}}
+         onBlur={() => {setTexFieldFocus(false)}} 
+         display="inline"> 
         </TextField>
         <Button>
-          <AddBoxIcon variant="primary" display="inline"/>
+          {(textFieldFocus) ? 
+           <SearchIcon></SearchIcon>
+           :
+           <AddBoxIcon variant="primary" display="inline"/>
+          }
         </Button>
       </div>
       
