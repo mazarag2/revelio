@@ -6,11 +6,23 @@ import { useUndoState } from '../../react-hooks'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
-import { InputLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import SearchIcon from '@material-ui/icons/Search';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import BlankTarget from './blank-target'
+import gql from 'graphql-tag'
+import { useQuery } from '@apollo/react-hooks'
+
+
+const getEnums = gql`query securityClassification {
+  metacardTypes{
+   enums
+ }
+}`
+
+
 
 const validate = (form = {}) => {
   const { title, description } = form
@@ -36,8 +48,9 @@ const validate = (form = {}) => {
   return errors
 }
 
-export default props => {
-  const { form = {}, attributes = [], onCancel, onSave } = props
+export const TargetEditor =  props => {
+  const { form = {}, attributes = [], onCancel, securityClassification ,loading } = props
+
 
   const { state, setState, ...rest } = useUndoState(Set(form.attributes))
 
@@ -50,20 +63,29 @@ export default props => {
 
   const [textFieldFocus, setTexFieldFocus] = useState(false)
 
+
+  const [createTargetList, setCreateTargetList] = useState(false)
+
+  const [classification, setClassification] = useState('U')
+
+
+
   return (
     
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
-        maxHeight: '100%',
+        height: '150%',
+        maxHeight: '200%',
         padding: 20,
         boxSizing: 'border-box',
         ...props.style,
       }}
     >
-
+      <Button>
+        <ArrowDropDownIcon></ArrowDropDownIcon>
+      </Button>
       <TextField
         autoFocus
         required
@@ -77,11 +99,13 @@ export default props => {
         onChange={e => setTitle(e.target.value)}
       />
 
-      <FormLabel stule={{padding: 20}}> Classification </FormLabel>
-      
+     
+      <FormLabel stule={{padding: 20, marginBottom : 20}}> Classification </FormLabel>
+
+      <br />
       <TextField
         fullWidth
-        rows={2}
+        rows={6}a
         multiline
         variant="outlined"
         label="Description"
@@ -92,7 +116,7 @@ export default props => {
       <Divider variant="middle" />
       <div  style={{display : 'flex'}}>
         <TextField label="Search Attribute"
-         defaultValue="Enter BE Number, WKT, Target Text..."  
+         defaultValue="Enter an Attribute...."  
          onFocus={() => {setTexFieldFocus(true)}}
          onBlur={() => {setTexFieldFocus(false)}} 
          display="inline"> 
@@ -101,10 +125,14 @@ export default props => {
           {(textFieldFocus) ? 
            <SearchIcon></SearchIcon>
            :
-           <AddBoxIcon variant="primary" display="inline"/>
+           <AddBoxIcon variant="primary"  display="inline" onClick={()=>{setCreateTargetList(true)}}></AddBoxIcon>
           }
         </Button>
       </div>
+        { (createTargetList) ? <BlankTarget></BlankTarget> : <div></div>}
+      <div>
+
+        </div>
       
 
       <div
@@ -117,23 +145,49 @@ export default props => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
-            if (Object.keys(errors).length === 0) {
-              const resultForm = {
-                id: form.id,
-                title,
-                description,
-                attributes: state.toJSON(),
-              }
-              onSave(resultForm)
-            } else {
-              setSubmitted(true)
-            }
-          }}
+          onClick={() => {}
+          }
         >
           Save
         </Button>
       </div>
     </div>
   )
+
+  
+}
+
+const determineClassifications = (enumValue) => {
+
+  if(enumValue.includes('TS')){
+    return { U: 0, C: 1, S: 2, TS: 3 };
+  }
+  else if(enumValue.includes('S')){
+    return { U: 0, C: 1, S: 2 }
+  }
+  else if(enumValue.includes('C')){
+    return { U: 0, C: 1 } 
+  }
+
+  return {U : 0};
+}
+export default props => {
+
+  const { data,loading,error } = useQuery(getEnums);
+  let securityClassification = '';
+  if(!loading){
+
+    const enumValues = data.metacardTypes.map((metacardType)=> {return metacardType.enums}); 
+
+    let allEnumValues = [];
+    
+    for(let index in enumValues){
+
+      if(enumValues[index]){
+        allEnumValues = allEnumValues.concat(enumValues[index]);
+      }
+    securityClassification = determineClassifications(allEnumValues);
+    console.log(securityClassification)
+  }
+  return <TargetEditor securityClassification={securityClassification} loading={loading}></TargetEditor>
 }
