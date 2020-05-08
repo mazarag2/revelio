@@ -14,7 +14,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import BlankTarget from './blank-target'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-
+import ClassificationColors from './classification-colors';
 
 const getEnums = gql`query securityClassification {
   metacardTypes{
@@ -99,10 +99,11 @@ export const TargetEditor =  props => {
         onChange={e => setTitle(e.target.value)}
       />
 
-     
+     <div >
       <FormLabel stule={{padding: 20, marginBottom : 20}}> Classification </FormLabel>
-
+      <span style={{'background-color' : ClassificationColors[classification]}}>{classification}</span>
       <br />
+      </div>
       <TextField
         fullWidth
         rows={6}a
@@ -129,10 +130,9 @@ export const TargetEditor =  props => {
           }
         </Button>
       </div>
-        { (createTargetList) ? <BlankTarget></BlankTarget> : <div></div>}
       <div>
-
-        </div>
+        { (createTargetList) ? <BlankTarget></BlankTarget> : <div></div>}
+      </div>
       
 
       <div
@@ -187,7 +187,9 @@ export default props => {
         allEnumValues = allEnumValues.concat(enumValues[index]);
       }
     securityClassification = determineClassifications(allEnumValues);
-    console.log(securityClassification)
+ 
+    }
+  
   }
   return <TargetEditor securityClassification={securityClassification} loading={loading}></TargetEditor>
 }
