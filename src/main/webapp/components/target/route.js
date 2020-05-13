@@ -20,7 +20,7 @@ import {
 } from '../index-cards/metacard-interactions'
 import RetryComponent from '../network-retry/snackbar-retry'
 import { Notification } from '../notification/notification'
-import TargetList from './target-list'
+import TargetEditor from './target-editor'
 
 const Loading = () => {
   return <LinearProgress />
@@ -244,7 +244,7 @@ const useDelete = () => {
     mutation DeleteResultForms($id: ID!) {
       deleteMetacard(id: $id)
     }
-  `
+  ` 
 
   return useMutation(mutation, {
     update: (cache, { data }) => {
@@ -288,7 +288,7 @@ export const Editor = props => {
   }
 
   return (
-    <TargetList
+    <TargetEditor
       style={{
         maxHeight: '60vh',
       }}
@@ -347,6 +347,7 @@ export default () => {
 
   const onSave = form => {
     const { attributes, modified, ...rest } = form
+    console.log(form.id)
     save({
       variables: {
         id: form.id,

@@ -11,4 +11,5 @@ export default [
   require('./metacard-types/metacard-types'),
   require('./system-properties/system-properties'),
   require('./login/login'),
+  require('./target/target'),
 ].reduce(mergeModules)
